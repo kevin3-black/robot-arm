@@ -4,7 +4,6 @@
 #pragma config(Sensor, in5,    shoulderFakePot, sensorPotentiometer)
 #pragma config(Sensor, in6,    elbowFakePot,   sensorPotentiometer)
 #pragma config(Sensor, in7,    wristFakePot,   sensorPotentiometer)
-#pragma config(Sensor, dgtl4,  button,         sensorTouch)
 #pragma config(Motor,  port1,           slider,        tmotorVex393_HBridge, openLoop, reversed)
 #pragma config(Motor,  port2,           elbow,         tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port3,           shoulder,      tmotorVex393_MC29, openLoop, reversed)
@@ -81,12 +80,12 @@ task main() {
     		if (abs(vexRT[Ch4]) > 20) wristOffset += vexRT[Ch4]*WRIST_SENS;
     		if (abs(vexRT[Ch1]) > 20) elbowOffset -= vexRT[Ch1]*ELBOW_SENS;
 
-       	if (vexRT[Btn7U] || false) move(arm, 3800, 3890+elbowOffset, 350+wristOffset);
-       	else if (vexRT[Btn8U] || false) move(arm, 2900, 3180+elbowOffset, 755+wristOffset);
-       	else if (vexRT[Btn8L] || SensorValue[button]) move(arm, 2020, 2700+elbowOffset, 1770+wristOffset);
-       	else if (vexRT[Btn8D] || false) move(arm, 1895, 2187+elbowOffset, 2850+wristOffset);
-       	else if (vexRT[Btn8R] || false) move(arm, 1800, 1350+elbowOffset, 3500+wristOffset);
-       	else if (vexRT[Btn5D] || false) move(arm, 2815, 2780+elbowOffset, 1085+wristOffset);
+       	if (vexRT[Btn7U]) move(arm, 3800, 3890+elbowOffset, 350+wristOffset);
+       	else if (vexRT[Btn8U]) move(arm, 2900, 3180+elbowOffset, 755+wristOffset);
+       	else if (vexRT[Btn8L]) move(arm, 2020, 2700+elbowOffset, 1770+wristOffset);
+       	else if (vexRT[Btn8D]) move(arm, 1895, 2187+elbowOffset, 2850+wristOffset);
+       	else if (vexRT[Btn8R]) move(arm, 1800, 1350+elbowOffset, 3500+wristOffset);
+       	else if (vexRT[Btn5D]) move(arm, 2815, 2780+elbowOffset, 1085+wristOffset);
     		else {
     			move(arm, SensorValue[shoulderFakePot], SensorValue[elbowFakePot], SensorValue[wristFakePot]);
     			wristOffset = 0;
@@ -104,7 +103,7 @@ void move(armState &arm, float sTarget, float eTarget, float wTarget) {
 
 float PID(PIDState &state, float target, float current, float p, float i, float d) {
     float error = target - current;
-    /*if (abs(state.integral) < 500000)*/ state.integral += error * TICK_DELAY;
+    if (abs(state.integral) < 500000) state.integral += error * TICK_DELAY;
     float derivative = (error - state.error) / TICK_DELAY;
     state.error = error;
 
